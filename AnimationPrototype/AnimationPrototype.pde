@@ -4,6 +4,8 @@ class Anim {
   Anim(){//default constructor
   }
   Anim(int numFrames_, float speed_){//default constructor
+    numFrames = numFrames_;
+    speed = speed_;
   }
   
   //variables
@@ -16,28 +18,41 @@ class Anim {
 }
 
 //Sprite Class
-class SpriteSheet extends PImage{
-  SpriteSheet(){//default constructor
+class Sprite{
+  Sprite(){//default constructor
     super();//calling PImage default constructor
   }
   
-  SpriteSheet(String fileName){
+  Sprite(String fileName){
     imageFile = fileName + ".png";
     dataFile = fileName + ".spt";
     
-    loadImage(imageFile);
-    initData();
+    animations = new ArrayList<Anim>();
+    
+    spriteSheet = loadImage(imageFile);//loading sprite sheet
+    initData();//getting data for sprite sheet
+    
+    currentFrame = new PImage();
+    setFrame(0, 0);
   }
   
   //variables
   String imageFile;//name of the image file (.png)
   String dataFile;//name of the sprite data file (.spt)
   
+  PImage currentFrame;//current fame of sprite sheet to display
+  PImage spriteSheet;//stores the sprite's sprite sheet
+  
   int frameWidth, frameHeight;//size of a single frame in pixels, all sprites on a sheet must be same size (22 x 19)
   
   ArrayList<Anim> animations;//list of animations contained in the sprite sheet
   
   //methods
+  void setFrame(int x, int y){//sets frame of sprite sheet to be diplayed on screen
+    currentFrame = spriteSheet.get(x, y, frameWidth, frameHeight); //<>//
+    //currentFrame.copy(spriteSheet, x, y, frameWidth, frameHeight, 0, 0, frameWidth, frameHeight);//don't use this or the set function cuz apparently they don't work
+  }
+  
   void initData(){//gets data from sprite data file
     BufferedReader reader;
     String line;
@@ -71,12 +86,19 @@ class SpriteSheet extends PImage{
   }
 }
 
+Sprite kirby;//test sprite
+
 void setup(){
+   size(800, 600, FX2D);//FX2D = faster 2D graphics maybe
+   //setting frame rate
+  frameRate(60);
   
+  kirby = new Sprite("sprites/kirbyRun");
 }
 
 void draw(){
-  SpriteSheet kirby = new SpriteSheet("sprites/kirbyRun");
+  background(0);
   
-  
+  //kirby.setFrame(0, 0);
+  image(kirby.currentFrame, width/2, height/2);
 }
