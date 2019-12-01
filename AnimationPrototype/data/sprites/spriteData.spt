@@ -1,0 +1,6 @@
+#first line gives data on size of sprite
+#frame size: x, y
+#followling lines give data for animations (1 per line):
+#animation: number of frames, speed of animation
+24, 19
+12, 1.0
