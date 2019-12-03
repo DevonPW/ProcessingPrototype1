@@ -1,0 +1,9 @@
+#describes custom frame sequences for animations
+#each number corresonds to the number of the frame in the animation
+#this allows for the same frame to be displayed multiple times in the same animation
+0,1,2,3,4
+0,1,2,3,4,3,2,1,0
+0,0,0,1,1,2,2,3,4
+
+#Frame Sequence files are not required for sprite sheets
+#Sprite Data files are always required

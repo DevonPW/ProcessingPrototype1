@@ -7,6 +7,7 @@ class Sprite{
   Sprite(String fileName){
     imageFile = fileName + ".png";
     dataFile = fileName + ".spt";
+    sequenceFile = fileName + ".fsq";
     
     animations = new ArrayList<Anim>();
     currentAnim = null;
@@ -21,6 +22,7 @@ class Sprite{
   //variables
   String imageFile;//name of the image file (.png)
   String dataFile;//name of the sprite data file (.spt)
+  String sequenceFile;//name of the frame sequence file (.fsq), optional
   
   PImage currentFrame;//current fame of sprite sheet to display
   PImage spriteSheet;//stores the sprite's sprite sheet
@@ -79,8 +81,8 @@ class Sprite{
     
     try {
       reader = createReader(dataFile);//getting sprite data file
-      int lineNum = 0;
       
+      int lineNum = 0;
       while ((line = reader.readLine()) != null){
         if (line.charAt(0) != '#'){//ignore lines starting with #, comment lines
         
@@ -89,15 +91,55 @@ class Sprite{
           if (lineNum == 0){//first line of file
               frameWidth = Integer.parseInt(data[0]);//storing number as integer, getting frame width
               frameHeight = Integer.parseInt(data[1]);//getting frame height
-              verticalAnims = Boolean.parseBoolean(data[2]);//getting alignment of animation frames
+              
+              //getting alignment of animation frames
+              verticalAnims = false;
+              if (data[2] != null && (data[2].equals("vertical") || data[2].equals("Vertical") || data[2].equals("VERTICAL"))){
+                verticalAnims = true;
+              }
           }
           else{//rest of lines
-            Anim a = new Anim(lineNum - 1, data[0], Integer.parseInt(data[1]), Float.parseFloat(data[2]), Boolean.parseBoolean(data[3]));//getting data for animation
+             //getting if animation loops or not
+             int loopType = 0;//if not specified, animation will not loop by default
+              if (data[3] != null){
+                if (data[3].equals("loop")){
+                  loopType = 1;
+                }
+                else if (data[3].equals("boomerang")){
+                  loopType = 2;
+                }
+              }
+            Anim a = new Anim(lineNum - 1, data[0], Integer.parseInt(data[1]), Float.parseFloat(data[2]), loopType);//getting data for animation
             animations.add(a);//adding animation to animation list
           }
           lineNum++;//incrementing line number
         }
         
+      }
+    }catch (IOException e){
+      e.printStackTrace();
+      line = null;
+    }
+    
+    try {
+      reader = createReader(sequenceFile);//getting frame sequence data file
+      
+      int lineNum = 0;
+      while ((line = reader.readLine()) != null){
+        if (line.charAt(0) != '#'){//ignore lines starting with #, comment lines
+          
+          String[] data = line.split(",");//separating line into chunks, by commas
+          
+          //putting numbers into an array
+          int[] sequence = new int[data.length];
+          for (int i = 0; i < sequence.length; i++){
+            sequence[i] = Integer.parseInt(data[i]);
+          }
+          
+          animations.get(lineNum).setFrameSequences(sequence);//setting frame sequence of corresponding animation
+          
+          lineNum++;//incrementing line number
+        }
       }
     }catch (IOException e){
       e.printStackTrace();
