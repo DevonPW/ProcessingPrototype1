@@ -12,6 +12,9 @@ class Sprite{
     animations = new ArrayList<Anim>();
     currentAnim = null;
     
+    verticalAnims = false;
+    fsq = false;
+    
     spriteSheet = loadImage(imageFile);//loading sprite sheet
     initData();//getting data for sprite sheet
     
@@ -31,6 +34,7 @@ class Sprite{
   
   ArrayList<Anim> animations;//list of animations contained in the sprite sheet
   boolean verticalAnims;//whether animations are lined up vertically or horizontally
+  boolean fsq;//whether a framesequence (.fsq) file is used
   
   Anim currentAnim;//animation sprite is currently running
   
@@ -42,18 +46,18 @@ class Sprite{
         int frameY = 0;//y coordinate of the next frame
         if (verticalAnims == true){//sprites are aligned in vertical colunms
           frameX = frameWidth * currentAnim.num;//getting x coordiante of sprite
-          frameY = frameHeight * currentAnim.currentFrameNum;//getting y coordinate of sprite
+          frameY = frameHeight * currentAnim.currentFrame;//getting y coordinate of sprite
         }
         else{//sprites are aligned in horizontal rows
           frameY = frameHeight * currentAnim.num;//getting y coordinate of sprite
-          frameX = frameWidth * currentAnim.currentFrameNum;//getting x coordiante of sprite
+          frameX = frameWidth * currentAnim.currentFrame;//getting x coordiante of sprite
         }
         setFrame(frameX, frameY);
       }
     }
   }
   
-  void setAnim(String animName){//set the animation to run by name
+  void setAnim(String animName){//set the animation to run by it's name
     if (currentAnim != null){
       currentAnim.stop();//stopping previous animation
     }
@@ -75,12 +79,13 @@ class Sprite{
     currentFrame = spriteSheet.get(x, y, frameWidth, frameHeight);
   }
   
-  void initData(){//gets data from sprite data file
+  void initData(){//gets data from sprite data files
     BufferedReader reader;
     String line;
     
+    //getting sprite data file
     try {
-      reader = createReader(dataFile);//getting sprite data file
+      reader = createReader(dataFile);
       
       int lineNum = 0;
       while ((line = reader.readLine()) != null){
@@ -93,9 +98,12 @@ class Sprite{
               frameHeight = Integer.parseInt(data[1]);//getting frame height
               
               //getting alignment of animation frames
-              verticalAnims = false;
-              if (data[2] != null && (data[2].equals("vertical") || data[2].equals("Vertical") || data[2].equals("VERTICAL"))){
+              if (data.length > 2 && (data[2].equals("vertical") || data[2].equals("Vertical") || data[2].equals("VERTICAL"))){
                 verticalAnims = true;
+              }
+              //getting whether a frame sequence file is used or not
+              if (data.length > 3 && (data[3].equals("fsq") || data[2].equals("framesequence") || data[2].equals("FSQ"))){
+                fsq = true;
               }
           }
           else{//rest of lines
@@ -121,29 +129,50 @@ class Sprite{
       line = null;
     }
     
-    try {
-      reader = createReader(sequenceFile);//getting frame sequence data file
-      
-      int lineNum = 0;
-      while ((line = reader.readLine()) != null){
-        if (line.charAt(0) != '#'){//ignore lines starting with #, comment lines
-          
-          String[] data = line.split(",");//separating line into chunks, by commas
-          
-          //putting numbers into an array
-          int[] sequence = new int[data.length];
-          for (int i = 0; i < sequence.length; i++){
-            sequence[i] = Integer.parseInt(data[i]);
+    //getting frame sequence data file
+    if (fsq == true){
+      try {
+        reader = createReader(sequenceFile);
+        
+        int lineNum = 0;
+        while ((line = reader.readLine()) != null){
+          if (line.charAt(0) != '#'){//ignore lines starting with #, comment lines
+            
+            if (line.charAt(0) != 'n' && line.charAt(0) != 'N'){//ignore lines starting with n, means animation doesn't have custom sequence
+              String[] data = line.split(",");//separating line into chunks, by commas
+              
+              //putting numbers into an array
+              ArrayList<Integer> sequence = new ArrayList<Integer>();
+              for (int i = 0; i < sequence.size(); i++){
+                sequence.add(Integer.parseInt(data[i]));
+              }
+              
+              animations.get(lineNum).setFrameSequences(sequence);//setting frame sequence of corresponding animation
+            }
+            else{//setting frame sequence to default frame sequence array [0, 1, 2, 3, 4,...etc]
+              ArrayList<Integer> sequence = new ArrayList<Integer>();
+              for (int j = 0; j < animations.get(lineNum).numFrames; j++){
+                sequence.add(j);
+              }
+              animations.get(lineNum).setFrameSequences(sequence);//setting frame sequence of corresponding animation
+            }
+            
+            lineNum++;//incrementing line number
           }
-          
-          animations.get(lineNum).setFrameSequences(sequence);//setting frame sequence of corresponding animation
-          
-          lineNum++;//incrementing line number
         }
+      }catch (IOException e){
+        e.printStackTrace();
+        line = null;
       }
-    }catch (IOException e){
-      e.printStackTrace();
-      line = null;
+    }
+    else{//if sprite does not have custom frame sequences
+      for (int i = 0; i < animations.size(); i++){//creating default frame sqeuence array [0, 1, 2, 3, 4,...etc]
+        ArrayList<Integer> sequence = new ArrayList<Integer>();
+        for (int j = 0; j < animations.get(i).numFrames; j++){
+          sequence.add(j);
+        }
+        animations.get(i).setFrameSequences(sequence);//setting frame sequence of corresponding animation
+      }
     }
     
   }

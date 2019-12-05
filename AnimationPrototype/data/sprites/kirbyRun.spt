@@ -3,4 +3,4 @@
 #followling lines give data for animations (1 per line):
 #animation: animation name,number of frames,frame rate of animation,if it loops or not (true/false)
 24,19,vertical
-run,8,20.0,true
+run,8,20.0,loop
