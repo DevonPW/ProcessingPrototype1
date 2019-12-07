@@ -59,18 +59,19 @@ class Sprite{
   
   void setAnim(String animName){//set the animation to run by it's name
     if (currentAnim != null){
-      currentAnim.stop();//stopping previous animation
+      currentAnim.pause();//stopping previous animation
     }
     for (int i = 0; i < animations.size(); i++){
       if (animations.get(i).name.equals(animName)){
         currentAnim = animations.get(i);//setting currentAnim to point to the desired animation
+        currentAnim.restart();
         break;
       }
     }
   }
   void setAnim(int num){//set the animation to run by it's number
     if (currentAnim != null){
-      currentAnim.stop();//stopping previous animation
+      currentAnim.pause();//stopping previous animation
     }
     currentAnim = animations.get(num);//setting currentAnim to point to the desired animation
   }
@@ -107,16 +108,14 @@ class Sprite{
               }
           }
           else{//rest of lines
-             //getting if animation loops or not
-             int loopType = 0;//if not specified, animation will not loop by default
-              if (data[3] != null){
-                if (data[3].equals("loop")){
-                  loopType = 1;
-                }
-                else if (data[3].equals("boomerang")){
-                  loopType = 2;
-                }
-              }
+           //getting if animation loops or not
+           int loopType = 0;//if not specified, animation will not loop by default
+            if (data.length > 3 && data[3].equals("loop")){
+                loopType = 1;
+            }
+            else if (data.length > 3  && data[3].equals("boomerang")){
+              loopType = 2;
+            }
             Anim a = new Anim(lineNum - 1, data[0], Integer.parseInt(data[1]), Float.parseFloat(data[2]), loopType);//getting data for animation
             animations.add(a);//adding animation to animation list
           }
@@ -143,7 +142,7 @@ class Sprite{
               
               //putting numbers into an array
               ArrayList<Integer> sequence = new ArrayList<Integer>();
-              for (int i = 0; i < sequence.size(); i++){
+              for (int i = 0; i < data.length; i++){
                 sequence.add(Integer.parseInt(data[i]));
               }
               

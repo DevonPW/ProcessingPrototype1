@@ -1,4 +1,6 @@
+#sprite sheet data
 24,19,horizontal,fsq
-fallAsleep,5,5.0
-sleep,4,10.0,boomerang
-wake,4,5.0
+#animations
+fallAsleep,5,4.0
+sleep,4,4.0,boomerang
+wake,4,4.0

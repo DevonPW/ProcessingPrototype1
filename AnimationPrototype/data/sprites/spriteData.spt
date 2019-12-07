@@ -2,5 +2,7 @@
 #frame size: x,y,true [NO SPACES!]
 #followling lines give data for animations (1 per line):
 #animation: animation name,number of frames,frame rate of animation,if it loops(true/false) [NO SPACES AFTER COMMA!]
+#sprite data:
 24,19,vertical
+#animation 1:
 name,12,30.0,true

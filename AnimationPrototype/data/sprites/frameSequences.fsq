@@ -5,5 +5,5 @@
 0,1,2,3,4,3,2,1,0
 0,0,0,1,1,2,2,3,4
 
-#Frame Sequence files are not required for sprite sheets
-#Sprite Data files are always required
+#Frame Sequence files (.fsq) are not required for sprite sheets
+#Sprite Data files (.spt) are always required

@@ -13,6 +13,7 @@ class Anim {
     prevFrameTime = -1;
     sequenceNum = 0;
     currentFrame = 0;
+    paused = true;
   }
   
   //variables
@@ -22,6 +23,7 @@ class Anim {
   float fps;//frame rate of animation
   float frameTime;//time to display each frame
   int loopType;//whether animation loops, boomerangs, or doesn't loop
+  boolean paused;//indicated if animation is not playing, hold current frame
   
   float prevFrameTime;//time at which animation last changed frames
   int sequenceNum;//the current element of the frame sequence array
@@ -33,6 +35,9 @@ class Anim {
   
   //check for updates to animation
   boolean update(){
+    if (paused == true){//dont update if paused.
+      return false;
+    }
     if (prevFrameTime == -1){//animation is not started yet
       prevFrameTime = millis();//setting start time to current time
       currentFrame = frameSequence.get(sequenceNum);//setting the current frame to be the corrresponding frame in the frame sequence
@@ -53,8 +58,8 @@ class Anim {
           sequenceNum += frameIncrement * 2;
         }
         //animation doesn't loop
-        else if (sequenceNum > numFrames || sequenceNum < 0){
-          stop();
+        else if (sequenceNum >= numFrames || sequenceNum < 0){
+          pause();
           return false;
         }
         currentFrame = frameSequence.get(sequenceNum);//setting the current frame to be the corrresponding frame in the frame sequence
@@ -64,14 +69,26 @@ class Anim {
     }
   }
   
-  void stop(){//stop running animation and reset to first frame
+  void restart(){
+    sequenceNum = 0;
+    currentFrame = frameSequence.get(0);
+    paused = false;
+  }
+  
+  void resume(){
+    paused = false;
+  }
+  
+  void stopReset(){//stop running animation and reset to first frame
     prevFrameTime = -1;
     sequenceNum = 0;
-    currentFrame = 0;
+    currentFrame = frameSequence.get(0);
+    paused = true;
   }
   
   void pause(){//stop running animation, but will resume from current frame
     prevFrameTime = -1;
+    paused = true;
   }
   
   void setFrameSequences(ArrayList<Integer> sequence){
